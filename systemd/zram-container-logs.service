@@ -1,0 +1,22 @@
+[Unit]
+Description=Compressed RAM disk (zram) for Kubernetes container logs
+# The mount point lives under /var/log, so that file system must be mounted first.
+RequiresMountsFor=/var/log
+After=local-fs.target systemd-modules-load.service
+# Container logs are written by the runtime (containerd / CRI-O / docker) into
+# /var/log/pods, and kubelet creates the per-pod directories there. Both must
+# only start after the RAM disk is mounted, otherwise they would write to (and
+# hold open) files on the physical disk underneath the mount.
+# Before= on a unit that is not installed is ignored, so listing all is safe.
+Before=kubelet.service containerd.service crio.service docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+EnvironmentFile=-/etc/default/zram-container-logs
+ExecStart=/usr/local/sbin/zram-logs.sh apply
+# Runs at shutdown after kubelet and the runtime have stopped (reverse order).
+ExecStop=/usr/local/sbin/zram-logs.sh remove
+
+[Install]
+WantedBy=multi-user.target

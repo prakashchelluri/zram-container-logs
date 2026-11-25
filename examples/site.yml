@@ -1,0 +1,11 @@
+---
+- name: Put Kubernetes container logs on zram
+  hosts: k8s_nodes
+  become: true
+  # One node at a time: with zram_logs_start_now=false the change takes
+  # effect when each node is rebooted.
+  serial: 1
+  roles:
+    - role: zram_container_logs
+      vars:
+        zram_logs_size: 1G

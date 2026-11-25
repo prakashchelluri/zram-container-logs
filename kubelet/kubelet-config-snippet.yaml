@@ -1,0 +1,11 @@
+---
+# Merge these two fields into the node's KubeletConfiguration
+# (kubeadm: /var/lib/kubelet/config.yaml), then restart kubelet.
+# Sizing for a 1 GiB zram device, see README "Sizing log rotation":
+#   usable  = 1024 MiB x 0.75 headroom          = 768 MiB
+#   per ctr = containerLogMaxFiles x MaxSize    = 3 x 4 MiB = 12 MiB
+#   fits    = 768 MiB / 12 MiB                  = 64 container log sets
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+containerLogMaxSize: 4Mi
+containerLogMaxFiles: 3

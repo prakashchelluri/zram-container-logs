@@ -1,0 +1,13 @@
+---
+galaxy_info:
+  role_name: zram_container_logs
+  author: Satya Prakash Chelluri
+  description: Put Kubernetes container logs on a compressed RAM disk (zram)
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: EL
+      versions: ["8", "9"]
+    - name: Ubuntu
+      versions: [jammy, noble]
+dependencies: []

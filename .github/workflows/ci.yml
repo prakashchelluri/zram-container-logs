@@ -1,0 +1,36 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  shell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shellcheck
+        run: shellcheck zram-logs.sh systemd/install.sh tests/test_zram_logs.sh
+      - name: Tests under dash (POSIX sh)
+        run: SH=dash sh tests/test_zram_logs.sh
+      - name: Tests under bash
+        run: SH=bash bash tests/test_zram_logs.sh
+      - name: Verify the systemd unit
+        run: |
+          sudo install -m 0755 zram-logs.sh /usr/local/sbin/zram-logs.sh
+          systemd-analyze verify systemd/zram-container-logs.service
+
+  ansible:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install yamllint ansible-core
+      - name: yamllint
+        run: yamllint roles examples kubelet
+      - name: Ansible syntax check
+        run: ansible-playbook -i localhost, --syntax-check examples/site.yml
+        env:
+          ANSIBLE_ROLES_PATH: roles

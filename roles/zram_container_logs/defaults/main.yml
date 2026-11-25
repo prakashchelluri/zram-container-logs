@@ -1,0 +1,11 @@
+---
+# Size of the zram device (K, M or G suffix) and where to mount it.
+zram_logs_size: 1G
+zram_logs_mount: /var/log/pods
+# zram-logs.sh on the control node; the default is the copy in this repository.
+zram_logs_script_src: "{{ role_path }}/../../zram-logs.sh"
+# false: the unit is enabled and the RAM disk is created at the next reboot,
+# which suits a rolling reboot of a fleet.
+# true: start it now. Only works on a drained node with kubelet and the
+# container runtime stopped; zram-logs.sh refuses otherwise.
+zram_logs_start_now: false

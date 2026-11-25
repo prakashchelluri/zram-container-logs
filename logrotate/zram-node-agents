@@ -1,0 +1,15 @@
+# /etc/logrotate.d/zram-node-agents
+# Example for logs that kubelet does NOT rotate, kept on a second zram mount:
+#   zram-logs.sh apply --mount /var/log/node-agents --size 256M
+# Do not point logrotate at /var/log/pods: kubelet rotates those files itself.
+# 'size' is only checked when logrotate runs; on most distributions that is
+# daily, so run it hourly (e.g. a systemd timer) for a small RAM disk.
+/var/log/node-agents/*.log {
+    size 10M
+    rotate 3
+    compress
+    missingok
+    notifempty
+    # The writers keep their file open; truncate in place instead of moving it.
+    copytruncate
+}

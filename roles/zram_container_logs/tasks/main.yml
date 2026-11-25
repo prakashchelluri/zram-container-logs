@@ -1,0 +1,43 @@
+---
+- name: Check that the zram kernel module is available
+  ansible.builtin.command: modinfo zram
+  changed_when: false
+
+- name: Install zram-logs.sh
+  ansible.builtin.copy:
+    src: "{{ zram_logs_script_src }}"
+    dest: /usr/local/sbin/zram-logs.sh
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install the systemd unit
+  ansible.builtin.template:
+    src: zram-container-logs.service.j2
+    dest: /etc/systemd/system/zram-container-logs.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload systemd
+
+- name: Configure size and mount point
+  ansible.builtin.template:
+    src: zram-container-logs.env.j2
+    dest: /etc/default/zram-container-logs
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Reload systemd before enabling the unit
+  ansible.builtin.meta: flush_handlers
+
+- name: Enable the unit so the RAM disk is recreated at every boot
+  ansible.builtin.systemd_service:
+    name: zram-container-logs.service
+    enabled: true
+
+- name: Start the unit now
+  ansible.builtin.systemd_service:
+    name: zram-container-logs.service
+    state: started
+  when: zram_logs_start_now | bool

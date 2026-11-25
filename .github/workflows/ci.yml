@@ -3,6 +3,9 @@ name: ci
 on:
   push:
   pull_request:
+  schedule:
+    - cron: "3 5 * * 1"  # weekly, catches breakage from new tool versions
+  workflow_dispatch:
 
 jobs:
   shell:

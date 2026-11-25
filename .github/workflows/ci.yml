@@ -11,7 +11,7 @@ jobs:
   shell:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: shellcheck
         run: shellcheck zram-logs.sh systemd/install.sh tests/test_zram_logs.sh
       - name: Tests under dash (POSIX sh)
@@ -26,8 +26,8 @@ jobs:
   ansible:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - run: python -m pip install yamllint ansible-core
